@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <meta name="description" content="Dự án laptopshop"/>
     <meta name="author" content=""/>
-    <title>Order</title>
+    <title>Order Detail</title>
     <link href="/css/styles.css" rel="stylesheet"/>
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
@@ -26,41 +26,39 @@
                 <h1 class="mt-4">Manage Order</h1>
                 <ol class="breadcrumb mb-4">
                     <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Order</li>
+                    <li class="breadcrumb-item"><a href="/admin/order">Order</a></li>
+                    <li class="breadcrumb-item active">View</li>
                 </ol>
                 <div class="mt-5">
                     <div class="row">
                         <div class="col-12 mx-auto">
                             <div class="d-flex justify-content-between">
-                                <h3>Table Orders</h3>
+                                <h3>Order detail with id = ${order.id}</h3>
                             </div>
                             <hr>
                             <table class="table table-bordered table-hover">
                                 <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Total Price</th>
-                                    <th>User</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th>Sản phẩm</th>
+                                    <th>Tên</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Thành tiền</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <c:forEach var="order" items="${orders}">
+                                <c:forEach var="orderDetail" items="${order.orderDetails}">
                                     <tr>
-                                        <td>${order.id}</td>
-                                        <td><fmt:formatNumber type="number" value="${order.totalPrice}"/> đ</td>
-                                        <td>${order.user.fullName}</td>
-                                        <td>${order.status}</td>
-                                        <td>
-                                            <a href="/admin/order/${order.id}" class="btn btn-success">View</a>
-                                            <a href="/admin/order/update/${order.id}" class="btn btn-warning">Update</a>
-                                            <a href="/admin/order/delete/${order.id}" class="btn btn-danger">Delete</a>
-                                        </td>
+                                        <td><img src="/images/product/${orderDetail.product.image}" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt=""></td>
+                                        <td><a href="/admin/product/${orderDetail.product.id}">${orderDetail.product.name}</a></td>
+                                        <td><fmt:formatNumber type="number" value="${orderDetail.price}"/> đ</td>
+                                        <td>${orderDetail.quantity}</td>
+                                        <td><fmt:formatNumber type="number" value="${orderDetail.price * orderDetail.quantity}"/> đ</td>
                                     </tr>
                                 </c:forEach>
                                 </tbody>
                             </table>
+                            <a href="/admin/order" class="btn btn-success mt-3">Back</a>
                         </div>
                     </div>
                 </div>
