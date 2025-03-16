@@ -2,6 +2,8 @@ package vn.hoidanit.laptopshop.cotroller.client;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -120,5 +122,23 @@ public class ItemController {
         HttpSession session = request.getSession(false);
         productService.handleAddProductToCart(session, id, quantity);
         return "redirect:/product/" + id;
+    }
+
+    @GetMapping("/products")
+    public String getProducts(Model model, @RequestParam("page") Optional<String> pageOptional) {
+        int page = 1;
+        try {
+            if (pageOptional.isPresent()) {
+                page = Integer.parseInt(pageOptional.get());
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid page number");
+        }
+        PageRequest pageRequest = PageRequest.of(page-1, 6);
+        Page<Product> products = productService.findAll(pageRequest);
+        model.addAttribute("products", products.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", products.getTotalPages());
+        return "client/product/show";
     }
 }

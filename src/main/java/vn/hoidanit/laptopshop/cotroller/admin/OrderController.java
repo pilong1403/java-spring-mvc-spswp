@@ -1,13 +1,15 @@
 package vn.hoidanit.laptopshop.cotroller.admin;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import vn.hoidanit.laptopshop.domain.Order;
 import vn.hoidanit.laptopshop.service.OrderService;
+
+import java.util.Optional;
 
 @Controller
 public class OrderController {
@@ -18,8 +20,20 @@ public class OrderController {
     }
 
     @GetMapping("/admin/order")
-    public String getDashboard(Model model) {
-        model.addAttribute("orders", orderService.findAll());
+    public String getDashboard(Model model, @RequestParam("page") Optional<String> pageOptional) {
+        int page = 1;
+        try {
+            if (pageOptional.isPresent()) {
+                page = Integer.parseInt(pageOptional.get());
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid page number");
+        }
+        Pageable pageable = PageRequest.of(page-1, 1);
+        Page<Order> orders = orderService.findAll(pageable);
+        model.addAttribute("orders", orders.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", orders.getTotalPages());
         return "admin/order/show";
     }
 

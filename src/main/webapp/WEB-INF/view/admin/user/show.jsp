@@ -62,6 +62,23 @@
                                     </c:forEach>
                                     </tbody>
                                 </table>
+                                <nav aria-label="Page navigation example">
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item">
+                                            <a class="page-link ${currentPage eq 1 ? 'disabled' : ''}" href="/admin/user?page=${currentPage - 1}" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <c:forEach begin="0" end="${totalPages-1}" varStatus="status">
+                                            <li class="page-item"><a class="page-link ${currentPage eq (status.index + 1) ? 'active' : ''}" href="/admin/user?page=${status.index + 1}">${status.index + 1}</a></li>
+                                        </c:forEach>
+                                        <li class="page-item">
+                                            <a class="page-link ${currentPage eq totalPages ? 'disabled' : ''}" href="/admin/user?page=${currentPage + 1}" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
                             </div>
                         </div>
                     </div>
