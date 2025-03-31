@@ -204,5 +204,76 @@
         return formatted;
     }
 
+    $('#btnFilter').click(function (event) {
+        event.preventDefault();
+
+        let factoryArr = [];
+        let targetArr = [];
+        let priceArr = [];
+
+        $("#factoryFilter .form-check-input:checked").each(function () {
+           factoryArr.push($(this).val());
+        });
+        $("#targetFilter .form-check-input:checked").each(function () {
+            targetArr.push($(this).val());
+        });
+        $("#priceFilter .form-check-input:checked").each(function () {
+            priceArr.push($(this).val());
+        });
+
+        let sortValue = $('input[name="radio-sort"]:checked').val();
+
+        const currentUrl = new URL(window.location.href);
+        const searchParams = currentUrl.searchParams;
+
+        searchParams.set('page', '1');
+        searchParams.set('sort', sortValue);
+
+        searchParams.delete("factory");
+        searchParams.delete("target");
+        searchParams.delete("price");
+
+        if (factoryArr.length > 0) {
+            searchParams.set('factory', factoryArr.join(','));
+        }
+        if (targetArr.length > 0) {
+            searchParams.set('target', targetArr.join(','));
+        }
+        if (priceArr.length > 0) {
+            searchParams.set('price', priceArr.join(','));
+        }
+
+        window.location.href = currentUrl.toString();
+    });
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.has('factory')) {
+        const factoryArr = params.get('factory').split(',');
+        $("#factoryFilter .form-check-input").each(function () {
+            $(this).attr('checked', factoryArr.includes($(this).val()));
+        });
+    }
+
+    if (params.has('target')) {
+        const targetArr = params.get('target').split(',');
+        $("#targetFilter .form-check-input").each(function () {
+            $(this).attr('checked', targetArr.includes($(this).val()));
+        });
+    }
+
+    if (params.has('price')) {
+        const priceArr = params.get('price').split(',');
+        $("#priceFilter .form-check-input").each(function () {
+            $(this).attr('checked', priceArr.includes($(this).val()));
+        });
+    }
+
+    if (params.has('sort')) {
+        $('input[name="radio-sort"]').each(function () {
+            $(this).attr('checked', params.get('sort') === $(this).val());
+        });
+    }
+
 })(jQuery);
 

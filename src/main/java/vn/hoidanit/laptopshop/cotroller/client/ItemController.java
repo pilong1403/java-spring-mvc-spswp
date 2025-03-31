@@ -1,5 +1,6 @@
 package vn.hoidanit.laptopshop.cotroller.client;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
@@ -11,11 +12,13 @@ import vn.hoidanit.laptopshop.domain.Cart;
 import vn.hoidanit.laptopshop.domain.CartDetail;
 import vn.hoidanit.laptopshop.domain.Product;
 import vn.hoidanit.laptopshop.domain.User;
+import vn.hoidanit.laptopshop.domain.dto.ProductCriteriaDTO;
 import vn.hoidanit.laptopshop.service.OrderService;
 import vn.hoidanit.laptopshop.service.ProductService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Controller
@@ -125,20 +128,25 @@ public class ItemController {
     }
 
     @GetMapping("/products")
-    public String getProducts(Model model, @RequestParam("page") Optional<String> pageOptional) {
+    public String getProducts(Model model, ProductCriteriaDTO productCriteriaDTO, HttpServletRequest request) {
         int page = 1;
         try {
-            if (pageOptional.isPresent()) {
-                page = Integer.parseInt(pageOptional.get());
+            if (Objects.nonNull(productCriteriaDTO.getPage()) && productCriteriaDTO.getPage().isPresent()) {
+                page = Integer.parseInt(productCriteriaDTO.getPage().get());
             }
         } catch (NumberFormatException e) {
             System.out.println("Invalid page number");
         }
-        PageRequest pageRequest = PageRequest.of(page-1, 6);
-        Page<Product> products = productService.findAll(pageRequest);
+        PageRequest pageRequest = productService.getPageRequest(productCriteriaDTO, page);
+        Page<Product> products = productService.findAll(pageRequest, productCriteriaDTO);
+        String qs = request.getQueryString();
+        if (StringUtils.isNotEmpty(qs)) {
+            qs = qs.replace("page=" + page, "");
+        }
         model.addAttribute("products", products.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", products.getTotalPages());
+        model.addAttribute("queryString", qs);
         return "client/product/show";
     }
 }

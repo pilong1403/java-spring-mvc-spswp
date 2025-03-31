@@ -2,10 +2,15 @@ package vn.hoidanit.laptopshop.service;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.hoidanit.laptopshop.domain.*;
+import vn.hoidanit.laptopshop.domain.dto.ProductCriteriaDTO;
 import vn.hoidanit.laptopshop.repository.*;
+import vn.hoidanit.laptopshop.service.specification.ProductSpecifications;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +40,65 @@ public class ProductService {
 
     public Page<Product> findAll(Pageable pageable) {
         return productRepository.findAll(pageable);
+    }
+
+    public Page<Product> findAll(Pageable pageable, ProductCriteriaDTO productCriteriaDTO) {
+        Specification<Product> combineSpecifications = Specification.where(null);
+        if (Objects.nonNull(productCriteriaDTO.getFactory()) && productCriteriaDTO.getFactory().isPresent()) {
+            combineSpecifications = combineSpecifications.and(ProductSpecifications.matchList(productCriteriaDTO.getFactory().get(), Product_.FACTORY));
+        }
+        if (Objects.nonNull(productCriteriaDTO.getTarget()) && productCriteriaDTO.getTarget().isPresent()) {
+            combineSpecifications = combineSpecifications.and(ProductSpecifications.matchList(productCriteriaDTO.getTarget().get(), Product_.TARGET));
+        }
+        if (Objects.nonNull(productCriteriaDTO.getPrice()) && productCriteriaDTO.getPrice().isPresent()) {
+            combineSpecifications = combineSpecifications.and(buildPriceSpecification(productCriteriaDTO.getPrice().get()));
+        }
+        return productRepository.findAll(combineSpecifications, pageable);
+    }
+
+    private Specification<Product> buildPriceSpecification(List<String> prices) {
+        Specification<Product> combineSpecifications = Specification.where(null);
+        for (String p : prices) {
+            double min = 0;
+            double max = 0;
+            switch (p) {
+                case "duoi-10-trieu":
+                    min = Double.MIN_VALUE;
+                    max = 10_000_000;
+                    break;
+                case "tu-10-15-trieu":
+                    min = 10_000_000;
+                    max = 15_000_000;
+                    break;
+                case "tu-15-20-trieu":
+                    min = 15_000_000;
+                    max = 20_000_000;
+                    break;
+                case "tren-20-trieu":
+                    min = 20_000_000;
+                    max = Double.MAX_VALUE;
+                    break;
+                default:
+                    break;
+            }
+            if (min != 0 && max != 0) {
+                combineSpecifications = combineSpecifications.or(ProductSpecifications.matchPrice(min, max));
+            }
+        }
+        return combineSpecifications;
+    }
+
+    public PageRequest getPageRequest(ProductCriteriaDTO productCriteriaDTO, int page) {
+        PageRequest pageRequest = PageRequest.of(page -1, 6);
+        if (Objects.nonNull(productCriteriaDTO.getSort()) && productCriteriaDTO.getSort().isPresent()) {
+            String sort = productCriteriaDTO.getSort().get();
+            if (sort.equals("gia-tang-dan")) {
+                pageRequest = PageRequest.of(page -1, 6, Sort.by(Product_.PRICE).ascending());
+            } else if (sort.equals("gia-giam-dan")) {
+                pageRequest = PageRequest.of(page -1, 6, Sort.by(Product_.PRICE).descending());
+            }
+        }
+        return pageRequest;
     }
 
     public Product save(Product product) {

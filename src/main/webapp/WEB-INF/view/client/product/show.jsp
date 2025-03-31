@@ -55,7 +55,7 @@
             <div class="row g-4 fruite">
                 <div class="col-12 col-md-4">
                     <div class="row g-4">
-                        <div class="col-12">
+                        <div class="col-12" id="factoryFilter">
                             <div class="mb-2"><b>Hãng sản xuất</b></div>
                             <div class="form-check form-check-inline">
                                 <input type="checkbox" class="form-check-input" id="factory-1" value="APPLE">
@@ -82,7 +82,7 @@
                                 <label class="form-check-label" for="factory-6">Acer</label>
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12" id="targetFilter">
                             <div class="mb-2"><b>Mục đích sử dụng</b></div>
                             <div class="form-check form-check-inline">
                                 <input type="checkbox" class="form-check-input" id="target-1" value="GAMING">
@@ -105,7 +105,7 @@
                                 <label class="form-check-label" for="target-5">Doanh nhân</label>
                             </div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12" id="priceFilter">
                             <div class="mb-2"><b>Mức giá</b></div>
                             <div class="form-check form-check-inline">
                                 <input type="checkbox" class="form-check-input" id="price-1" value="duoi-10-trieu">
@@ -127,25 +127,28 @@
                         <div class="col-12">
                             <div class="mb-2"><b>Sắp xếp</b></div>
                             <div class="form-check form-check-inline">
-                                <input type="radio" name="sort" class="form-check-input" id="sort-1" value="gia-tang-dan">
+                                <input type="radio" name="radio-sort" class="form-check-input" id="sort-1" value="gia-tang-dan">
                                 <label class="form-check-label" for="sort-1">Giá tăng dần</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input type="radio" name="sort" class="form-check-input" id="sort-2" value="gia-giam-dan">
+                                <input type="radio" name="radio-sort" class="form-check-input" id="sort-2" value="gia-giam-dan">
                                 <label class="form-check-label" for="sort-2">Giá giảm dần</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input type="radio" name="sort" class="form-check-input" id="sort-3" value="khong-sap-xep">
+                                <input type="radio" name="radio-sort" class="form-check-input" id="sort-3" value="khong-sap-xep" checked>
                                 <label class="form-check-label" for="sort-3">Không sắp xếp</label>
                             </div>
                         </div>
                         <div class="col-12">
-                            <a href="/products" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4">LỌC SẢN PHẨM</a>
+                            <button id="btnFilter" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4">LỌC SẢN PHẨM</button>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-md-8 text-center">
                     <div class="row g-4">
+                        <c:if test="${totalPages == 0}">
+                            <div>Không tìm thấy sản phẩm</div>
+                        </c:if>
                         <c:forEach var="product" items="${products}">
                             <div class="col-md-6 col-lg-4">
                                 <div class="rounded position-relative fruite-item">
@@ -177,21 +180,23 @@
                                 </div>
                             </div>
                         </c:forEach>
-                        <div class="pagination d-flex justify-content-center mt-5">
-                            <li class="page-item">
-                                <a class="page-link ${currentPage eq 1 ? 'disabled' : ''}" href="/products?page=${currentPage - 1}" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                            <c:forEach begin="0" end="${totalPages-1}" varStatus="status">
-                                <li class="page-item"><a class="page-link ${currentPage eq (status.index + 1) ? 'active' : ''}" href="/products?page=${status.index + 1}">${status.index + 1}</a></li>
-                            </c:forEach>
-                            <li class="page-item">
-                                <a class="page-link ${currentPage eq totalPages ? 'disabled' : ''}" href="/products?page=${currentPage + 1}" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        </div>
+                        <c:if test="${totalPages > 0}">
+                            <div class="pagination d-flex justify-content-center mt-5">
+                                <li class="page-item ${currentPage eq 1 ? 'disabled' : ''}">
+                                    <a class="page-link" href="/products?page=${currentPage - 1}${queryString}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <c:forEach begin="0" end="${totalPages-1}" varStatus="status">
+                                    <li class="page-item"><a class="page-link ${currentPage eq (status.index + 1) ? 'active' : ''}" href="/products?page=${status.index + 1}${queryString}">${status.index + 1}</a></li>
+                                </c:forEach>
+                                <li class="page-item ${currentPage eq totalPages ? 'disabled' : ''}">
+                                    <a class="page-link" href="/products?page=${currentPage + 1}${queryString}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </div>
+                        </c:if>
                     </div>
                 </div>
             </div>
