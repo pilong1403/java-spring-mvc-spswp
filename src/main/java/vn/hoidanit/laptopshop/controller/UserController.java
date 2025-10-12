@@ -12,10 +12,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UserController {
+    // dependency injection
+    private UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @RequestMapping("/")
     public String getHomePage() {
-        return "eric.html";
+        String test = this.userService.handleHello();
+        return "hello";
     }
 
     // @RestController
