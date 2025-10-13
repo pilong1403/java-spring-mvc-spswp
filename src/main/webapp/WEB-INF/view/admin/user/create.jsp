@@ -16,7 +16,7 @@
         <div class="col-md-6 col-12 mx-auto mt-4">
           <h1 class="mb-4">Tạo người dùng mới</h1>
 
-          <form:form method="post" action="/admin/user/create1" modelAttribute="newUser">
+          <form:form method="post" action="/admin/user/create" modelAttribute="newUser">
             <div class="mb-4">
               <label for="email" class="form-label">Email</label>
               <form:input type="email" class="form-control" path="email" aria-required="" />

@@ -30,17 +30,23 @@ public class UserController {
         return "hello";
     }
 
-    @RequestMapping("/admin/user")
+    @RequestMapping(value = "/admin/user", method = RequestMethod.GET)
+    public String getUsersPage(Model model) {
+        List<User> users = this.userService.getAllUsers();
+        model.addAttribute("users", users);
+        return "admin/user/table-user";
+    }
+
+    @RequestMapping(value = "/admin/user/create", method = RequestMethod.GET)
     public String getCreateUserPage(Model model) {
         model.addAttribute("newUser", new User());
         return "admin/user/create";
     }
 
-    @RequestMapping(value = "/admin/user/create1", method = RequestMethod.POST)
-    public String getCreateUserPageAlias(Model model, @ModelAttribute("newUser") User hoidanit) {
-        System.out.println("run here: " + hoidanit);
+    @RequestMapping(value = "/admin/user/create", method = RequestMethod.POST)
+    public String postCreateUser(Model model, @ModelAttribute("newUser") User hoidanit) {
         this.userRepository.save(hoidanit);
-        return "hello";
+        return "redirect:/admin/user";
     }
 
 }
