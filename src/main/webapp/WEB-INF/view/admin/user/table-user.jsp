@@ -35,7 +35,7 @@
                                     <td>${u.email}</td>
                                     <td>${u.fullName}</td>
                                     <td>
-                                        <a href="#" class="btn btn-sm btn-success me-1">View</a>
+                                        <a href="/admin/user/${u.id}" class="btn btn-sm btn-success me-1">View</a>
                                         <a href="#" class="btn btn-sm btn-warning me-1">Update</a>
                                         <a href="#" class="btn btn-sm btn-danger">Delete</a>
                                     </td>
