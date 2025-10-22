@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import vn.hoidanit.laptopshop.domain.User;
 import vn.hoidanit.laptopshop.repository.UserRepository;
 import vn.hoidanit.laptopshop.service.UserService;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class UserController {
@@ -59,4 +62,25 @@ public class UserController {
         return "redirect:/admin/user";
     }
 
+    @RequestMapping(value = "/admin/user/update/{id}", method = RequestMethod.GET)
+    public String getUpdateUserPage(Model model, @PathVariable("id") long id) {
+        User currentUser = this.userService.getUserById(id);
+        model.addAttribute("updateUser", currentUser);
+        return "admin/user/update";
+    }
+
+    @PostMapping("/admin/user/update")
+    public String postUpdateUser(Model model, @ModelAttribute("updateUser") User updateUser) {
+        User currentUser = this.userService.getUserById(updateUser.getId());
+        if (currentUser != null) {
+            System.out.println("check update user: " + updateUser);
+            currentUser.setEmail(updateUser.getEmail());
+            currentUser.setFullName(updateUser.getFullName());
+            currentUser.setPhone(updateUser.getPhone());
+            currentUser.setAddress(updateUser.getAddress());
+            this.userService.handleSaveUser(currentUser);
+        }
+        return "redirect:/admin/user";
+    }
+    // ádfasdf
 }
